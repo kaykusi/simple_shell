@@ -1,3 +1,6 @@
-# **THE SHELL - MANDO The Simple Shell**
+# **THE SHELL :shell:**
+MANDO - The Simple Shell
 
-This repository comes out with an implementation of c functions to design a unix like shell.
+# **DESCRIPTION :information_source:**
+MANDO is a simple UNIX command language interpreter that reads commands
+from either a file or standard input and executes them.
