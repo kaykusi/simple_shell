@@ -1,4 +1,4 @@
-#ifndef _SHELL_HEAD_H__
+#ifndef _SHELL_HEAD_H_
 #define _SHELL_HEAD_H_
 
 #include <string.h>
@@ -12,8 +12,7 @@
 #include <sys/stat.h>
 #include <stdarg.h>
 #include <signal.h>
-#define PROMPT "shell_head $ "
-
+#define PROMPT "Shell_Head $ "
 
 /**
  * struct builtin_d - Defines the builtins functions.
