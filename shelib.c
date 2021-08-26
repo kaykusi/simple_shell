@@ -1,69 +1,117 @@
 #include "shell_head.h"
 
-/**
- * _strcmp - compares two strings
- * @s1: First string
- * @s2: Second string
- * Return: 0 if strings match. -1 Otherwise.
- */
-int _strcmp(char *s1, char *s2)
-{
-	int i;
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
-	if (str_len(s1) != str_len(s2))
+/**
+ * _getchar - Get char function
+ * Return: Integer that represent the char
+ */
+int _getchar(void)
+{
+	int rd;
+	char buff[2];
+
+	rd = read(STDIN_FILENO, buff, 1);
+
+	if (rd == 0)
+		return (EOF);
+	if (rd == -1)
+		exit(99);
+
+	return (*buff);
+}
+
+/**
+ * _getline - something
+ * @lineptr: a
+ * @n: a
+ * @stream: a
+ * Return: some
+ */
+ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
+{
+	char *temp;
+	size_t n_alloc = 120;
+	size_t n_read = 0;
+	size_t old_size;
+	size_t n_realloc;
+	int c;
+	static int i; /* TODO: Use static variable */
+
+	(void) i;
+	if (lineptr == NULL || n == NULL || stream == NULL)
 		return (-1);
-	for (i = 0; s1[i] != '\0'; i++)
+
+	if (*lineptr == NULL)
 	{
-		if (s1[i] != s2[i])
+		*lineptr = malloc(n_alloc);
+		if (*lineptr == NULL)
 			return (-1);
+		*n = n_alloc;
 	}
-	return (0);
+	while ((c = _getchar()) != EOF)
+	{
+		if (n_read >= *n)
+		{
+			old_size = n_alloc; /* Save the old size allocated */
+			n_realloc = *n + n_alloc;
+			temp = _realloc(*lineptr, old_size, n_realloc + 1); /* TODO: n_alloc */
+
+			if (temp == NULL)
+				return (-1);
+
+			n_alloc = n_realloc + 1; /* Update the size allocated with the new size*/
+			*lineptr = temp;
+			*n = n_realloc;
+		}
+		n_read++;
+		(*lineptr)[n_read - 1] = (char) c;
+
+		if (c == '\n')
+			break;
+
+	}
+	if (c == EOF)
+		return (-1);
+	(*lineptr)[n_read] = '\0';
+	return ((ssize_t) n_read);
 }
 
 /**
- * _strdup - create a copy of a string
- * @src: Contains the original string
- * Return: Gives back the copy of string
+ * *_realloc - Reallocates memory block using malloc and free
+ * @ptr: Pointer of void
+ * @old_size: Bytes values
+ * @new_size: Bytes values
+ * Return: Pointer of void reallocated with new memory
  */
-char *_strdup(char *src)
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 {
-	int i;
-	int len;
-	char *dest;
+	unsigned int i;
+	char *new, *another = ptr;
 
-	len = str_len(src);
-	dest = malloc(sizeof(char) * (len + 1));
+	if (ptr == NULL)
+	{
+		new = malloc(new_size);
+		if (new == NULL)
+			return (NULL);
+		return (new);
+	}
+	if (new_size == 0 && ptr != NULL)
+	{
+		free(ptr);
+		return (NULL);
+	}
 
-	for (i = 0; src[i] != '\0'; i++)
-		dest[i] = src[i];
-	dest[i] = '\0';
-	return (dest);
-}
+	if (new_size == old_size)
+		return (ptr);
 
-/**
- * print_str - Prints a string character by character.
- * @str: String to be printed. If the string is NULL it will print (null)
- * @new_line: If integer is 0 a new line will be printed. Otherwise a new line
- * will not be printed.
- */
-void print_str(char *str, int new_line)
-{
-	int i;
+	new = malloc(new_size);
+	if (new == NULL)
+		return (NULL);
+	for (i = 0; i < old_size; i++)
+		new[i] = another[i];
 
-	if (str == NULL)
-		str = "(null)";
-	for (i = 0; str[i] != '\0'; i++)
-		write(STDOUT_FILENO, &str[i], 1);
-	if (new_line == 0)
-		write(STDOUT_FILENO, "\n", 1);
-}
+	free(ptr);
 
-/**
- * _putchar - Writes a character to stdout
- * @c: Character that will be written to stdout
- * Return: Upon success how many characters were written.
- */
-int _putchar(char c)
-{
-	return (write(1, &c, 1));
+	return (new);
 }
